@@ -9,6 +9,8 @@ fun main(args: Array<String>) {
   // property syntax
   println(member.name)
   println(member.isMarried)
+
+  println(rectangle.isSquare)
 }
 
 // expression body and return type inference
@@ -31,3 +33,8 @@ class Member(
 
 val member = Member("Bob", true)
 
+class Rectangle(val height: Int, val width: Int) {
+  val isSquare: Boolean get() = height == width
+}
+
+val rectangle = Rectangle(41, 43)
