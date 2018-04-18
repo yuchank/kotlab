@@ -33,7 +33,7 @@ class Member(
 
 val member = Member("Bob", true)
 
-class Rectangle(val height: Int, val width: Int) {
+class Rectangle(private val height: Int, private val width: Int) {
   val isSquare: Boolean get() = height == width
 }
 
