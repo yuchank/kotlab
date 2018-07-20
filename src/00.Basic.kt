@@ -112,6 +112,7 @@ fun main(args: Array<String>) {
 
   Greeter(args[0]).greet()
   InitOrder(args[0])
+  Constructor(3)
 }
 
 fun hasPrefix(x: Any) = when (x) {
@@ -163,3 +164,33 @@ class People(val firstName: String, val lastName: String, var age: Int)
 class Customer public /* @Inject */ constructor(name: String)
 
 // secondary constructor
+class Parent(val name: String) {
+  // delegation to the primary constructor
+  constructor(name: String, parent: Parent) : this(name)
+}
+
+class Constructor {
+  // init blocks are part of the primary constructor
+  init {
+    println("Init Block")
+  }
+
+  // secondary constructor
+  constructor(i: Int) {
+    // <-- delegation to the primary constructor happens as the first statement of a secondary constructor
+    println("Constructor")
+  }
+}
+
+// private empty primary constructor
+class DontCreateMe private constructor()
+
+// default value
+class Sample(val name: String = "")
+
+// the default superclass is Any
+class Example   // implicitly inherits from Any
+
+// declare an explicit supertype
+open class Base(p: Int)   // open is the opposite of java's final. by default, all classes in kotlin are final.
+class Derived(p: Int) : Base(p)
