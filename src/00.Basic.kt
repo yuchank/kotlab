@@ -84,7 +84,7 @@ fun main(args: Array<String>) {
 
   // arbitrary expressions as branch conditions
   when (c) {
-    Integer.parseInt(t) -> println("t encodes c")
+    t.toInt() -> println("t encodes c")
     else -> println("t does not encode c")
   }
 
