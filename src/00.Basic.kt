@@ -194,3 +194,12 @@ class Example   // implicitly inherits from Any
 // declare an explicit supertype
 open class Base(p: Int)   // open is the opposite of java's final. by default, all classes in kotlin are final.
 class Derived(p: Int) : Base(p)
+
+open class View {
+  constructor(ctx: Int)
+  constructor(ctx: Int, attrs: Int)
+}
+class MyView : View {
+  constructor(ctx: Int) : super(ctx)
+  constructor(ctx: Int, attrs: Int) : super(ctx, attrs)
+}
