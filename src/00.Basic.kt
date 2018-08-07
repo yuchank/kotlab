@@ -113,6 +113,8 @@ fun main(args: Array<String>) {
   Greeter(args[0]).greet()
   InitOrder(args[0])
   Constructor(3)
+
+  DerivedOrder("John", "Wick")
 }
 
 fun hasPrefix(x: Any) = when (x) {
@@ -192,9 +194,22 @@ class Sample(val name: String = "")
 class Example   // implicitly inherits from Any
 
 // declare an explicit supertype
-open class Base(p: Int)   // open is the opposite of java's final. by default, all classes in kotlin are final.
-class Derived(p: Int) : Base(p)
+open class Base(p: Int) {  // open is the opposite of java's final. by default, all classes in kotlin are final.
+  open fun v() {}
+  fun nv() {}
+}
 
+// In a final class, open members are prohibited.
+class Derived(p: Int) : Base(p) {
+  override fun v() {}
+}
+
+// In a open class, override is itself open. if you want to prohibit re-overriding, use final
+open class AnotherDerived(p: Int) : Base(p) {
+  final override fun v() {}
+}
+
+// choose constructor
 open class View {
   constructor(ctx: Int)
   constructor(ctx: Int, attrs: Int)
@@ -202,4 +217,92 @@ open class View {
 class MyView : View {
   constructor(ctx: Int) : super(ctx)
   constructor(ctx: Int, attrs: Int) : super(ctx, attrs)
+}
+
+// overriding properties
+open class Foo {
+  open val x: Int get() { return 0 }  // custom getter
+}
+
+class Bar : Foo() {
+  override val x: Int = 1
+}
+
+// you can override a val property with a var property.
+interface iFoo {
+  val count: Int
+}
+class Bar1(override val count: Int): iFoo
+class Bar2: iFoo {
+  override var count: Int = 0
+}
+
+// initialization order
+open class BaseOrder(val name: String) {
+  init { println("Initializing Base") }   // # 2
+  open val size: Int = name.length.also { println("Initializing size in Base: $it") }   // # 3
+}
+
+class DerivedOrder(name: String, val lastName: String) : BaseOrder(name.capitalize().also { println("Argument for Base: $it") }) {  // # 1
+  init { println("Initializing Derived") }    // # 4
+  override val size: Int = (super.size + lastName.length).also { println("Initializing size in Derived: $it") }   // # 5
+}
+
+// calling the superclass implementation
+open class Foo2 {
+  open fun f() { println("Foo.f()") }
+  open val x: Int get() = 1
+}
+
+class Bar3: Foo2() {
+  override fun f() {
+    super.f()
+    println("Bar.f()")
+  }
+
+  override val x: Int get() = super.x + 1
+}
+
+class Bar4: Foo2() {
+  override fun f() { /*...*/ }
+  override val x: Int get() = 0
+
+  inner class Baz {
+    fun g() {
+      super@Bar4.f()        // calls Foo2's implementation of f()
+      println(super@Bar4.x) // Uses Foo's implementation of x's getter
+    }
+  }
+}
+
+// overriding rules
+open class A {
+  open fun f() { print("A") }
+  fun a() { print("a") }
+}
+
+interface B {
+  fun f() { print("B") }  // interface members are 'open' by default
+  fun b() { print("b") }
+}
+
+class C(): A(), B {
+  // The compiler requires f() to be overriden:
+  override fun f() {
+    super<A>.f()  // call to A.f()
+    super<B>.f()  // call to B.f()
+  }
+}
+
+// don't need to annotate class or function with open
+abstract class AA : A() {
+  abstract override fun f()
+}
+
+// companion object
+class Foo3 {
+  companion object {
+    const val BAR = "bar"
+    fun baz() {}
+  }
 }
